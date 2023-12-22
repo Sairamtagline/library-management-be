@@ -75,9 +75,9 @@ exports.getBooks = async (req, res) => {
     const { role } = req?.user;
     const query = {};
 
-    if (role === "USER") {
-      query.currentAvailability = true;
-    }
+    // if (role === "USER") {
+    //   query.currentAvailability = true;
+    // }
     const books = await bookModel.find(query).sort({ createdAt: -1 }).lean();
     return response(res, false, 200, "Get books succesfully!", books);
   } catch (error) {

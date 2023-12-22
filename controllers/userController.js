@@ -108,7 +108,19 @@ exports.deleteUser = async (req, res) => {
     if (!user) {
       return response(res, true, 404, "User not found");
     }
-
+    const issuedBook = await transactionModel
+      .find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(1);
+    const foundIssuedUser = issuedBook[0];
+    if (foundIssuedUser && foundIssuedUser.transactionType === "borrowed") {
+      return response(
+        res,
+        false,
+        400,
+        "User cant be deleted! User has assigned one book."
+      );
+    }
     await Promise.all([
       userModel.deleteOne({ _id: userId }),
       transactionModel.deleteMany({ userId }),
