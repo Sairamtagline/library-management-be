@@ -136,23 +136,27 @@ paths:
           application/json:
             schema:
               type: object
-              properties:
-                name:
-                  type: string
-                userName:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
-                contact:
-                  type: number
+              properties: 
+                updateUser:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    userName:
+                      type: string
+                    email:
+                      type: string
+                    password:
+                      type: string
+                    contact:
+                      type: number
             example:
-              name: Test User
-              userName: user123
-              email: test123@yopmail.com
-              password: Tagline@123
-              contact: 9897876545
+              updateUser:
+                name: Test User
+                userName: user123
+                email: test123@yopmail.com
+                password: Tagline@123
+                contact: 9897876545
         required: true
       responses:
         "200":
@@ -383,7 +387,26 @@ paths:
           description: Validation error
         "401":
           description: Authentication required
-
+  /book/dashboard:
+    get:
+      tags:
+        - Books
+      summary: Return dashboard data 
+      description: Return dashboard
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required     
+           
   /transaction:
     get:
       tags:

@@ -2,6 +2,7 @@ const userModel = require("../models/userModel");
 const { response, serverError, encryptPassword } = require("../helpers/common");
 const transactionModel = require("../models/transactions");
 const { default: mongoose } = require("mongoose");
+const bcrypt = require("bcrypt");
 
 exports.createUser = async (req, res) => {
   try {
@@ -17,15 +18,17 @@ exports.createUser = async (req, res) => {
     if (isEmailExists) {
       return response(res, true, 400, "Email already exists");
     }
+    const encPassword = bcrypt.hashSync(password, 10);
     const user = new userModel({
       role: "USER",
       userName,
       name,
       email,
       contact,
-      password: await encryptPassword(password),
+      password: encPassword,
     });
     const userWithoutPassword = {
+      _id: user._id,
       role: user.role,
       userName: user.userName,
       name: user.name,
@@ -33,7 +36,13 @@ exports.createUser = async (req, res) => {
       contact: user.contact,
     };
     await userModel.create(user);
-    return response(res, false, 200, "User created successfully", userWithoutPassword);
+    return response(
+      res,
+      false,
+      200,
+      "User created successfully",
+      userWithoutPassword
+    );
   } catch (error) {
     return serverError(res, error);
   }
@@ -41,7 +50,7 @@ exports.createUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const { userId } = req.param;
+    const { userId } = req.params;
     const updateUser = req.body.updateUser;
     const { userName, email, password, name, contact } = updateUser;
 
@@ -52,7 +61,10 @@ exports.updateUser = async (req, res) => {
     }
     if (userName) {
       const isUsernameExists = await userModel.findOne({ userName }).lean();
-      if (isUsernameExists && isUsernameExists._id.toString() !== userId.toString()) {
+      if (
+        isUsernameExists &&
+        isUsernameExists._id.toString() !== userId.toString()
+      ) {
         return response(res, true, 400, "Username already exists");
       }
     }
@@ -62,13 +74,12 @@ exports.updateUser = async (req, res) => {
         return response(res, true, 400, "Email already exists");
       }
     }
-
     const updateFields = {
       ...(userName ? { userName } : {}),
       ...(email ? { email } : {}),
       ...(name ? { name } : {}),
       ...(contact ? { contact } : {}),
-      ...(password ? { password: encryptPassword(password) } : {}),
+      ...(password ? { password: bcrypt.hashSync(password, 10) } : {}),
     };
 
     const projection = {
