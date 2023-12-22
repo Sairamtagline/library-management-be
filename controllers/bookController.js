@@ -171,36 +171,47 @@ exports.dailyBookList = async (req, res) => {
     const endDate = new Date(new Date());
     endDate.setHours(23, 59, 59, 999);
 
-    const [todaysIssued, todaysDue, totalIssued] = await Promise.all([
-      transactionModel
-        .find({
-          transactionType: "borrowed",
-          createdAt: {
-            $gte: startDate,
-            $lte: endDate,
-          },
-        })
-        .countDocuments(),
-      transactionModel
-        .find({
-          transactionType: "borrowed",
-          dueDate: {
-            $gte: startDate,
-            $lte: endDate,
-          },
-        })
-        .countDocuments(),
-      transactionModel
-        .find({
-          transactionType: "borrowed",
-        })
-        .countDocuments(),
-    ]);
+    const [todaysIssued, todaysDue, totalIssued, dueMissed] = await Promise.all(
+      [
+        transactionModel
+          .find({
+            transactionType: "borrowed",
+            createdAt: {
+              $gte: startDate,
+              $lte: endDate,
+            },
+          })
+          .countDocuments(),
+        transactionModel
+          .find({
+            transactionType: "borrowed",
+            dueDate: {
+              $gte: startDate,
+              $lte: endDate,
+            },
+          })
+          .countDocuments(),
+        transactionModel
+          .find({
+            transactionType: "borrowed",
+          })
+          .countDocuments(),
+        transactionModel
+          .find({
+            transactionType: "borrowed",
+            dueDate: {
+              $lte: startDate,
+            },
+          })
+          .countDocuments(),
+      ]
+    );
 
     return response(res, false, 200, "Books count list get succesfully!", {
       todaysIssued,
       todaysDue,
       totalIssued,
+      dueMissed,
     });
   } catch (error) {
     return serverError(res, error);
