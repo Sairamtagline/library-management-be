@@ -1,0 +1,412 @@
+openapi: 3.0.0
+info:
+  title: Library management system - OpenAPI 3.0
+  description: APIs for Library management system.
+  version: 1.0.0
+
+  # changes starts from here
+servers:
+  - url: "{{API_URL}}"
+  # - url: "http://192.168.0.94:4546/api"
+
+tags:
+  - name: Authentication
+    description: Everything about User Authentication
+  - name: Users
+    description: Everything about Users
+  - name: Books
+    description: Everything about Books
+  - name: Transaction
+    description: Everything about Transaction
+
+paths:
+  /auth/sign-in:
+    post:
+      tags:
+        - Authentication
+      summary: Signin admin/user
+      description: Login will be accessible to Admins and Users
+      requestBody:
+        description: Login admin/user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+            example:
+              email: admin@yopmail.com
+              password: Tagline@123
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: User not found for given email!
+        "401":
+          description: Invalid password!
+
+  /user:
+    post:
+      tags:
+        - Users
+      summary: Create user
+      description: Create Users
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Create user requestBody
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                userName:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                contact:
+                  type: number
+            example:
+              name: Test User
+              userName: user123
+              email: test123@yopmail.com
+              password: Tagline@123
+              contact: 9897876545
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required
+    get:
+      tags:
+        - Users
+      summary: Get user
+      description: Get Users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required
+  /user/{userId}:
+    put:
+      tags:
+        - Users
+      summary: Update user
+      description: Update Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          description: userId to update
+          required: true
+          schema:
+            type: string
+            format: hexadecimal
+      requestBody:
+        description: Update user requestBody
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                userName:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                contact:
+                  type: number
+            example:
+              name: Test User
+              userName: user123
+              email: test123@yopmail.com
+              password: Tagline@123
+              contact: 9897876545
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      description: Delete Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          description: userId to delete
+          required: true
+          schema:
+            type: string
+            format: hexadecimal
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required
+
+  /book:
+    post:
+      tags:
+        - Books
+      summary: Create Book
+      description: Create Books
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Create books requestBody
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                author: 
+                  type: string
+            example:
+              name: Test Book
+              author: Some Author
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required
+    get:
+      tags:
+        - Books
+      summary: Get Books
+      description: Get Books list
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required    
+  /book/{bookId}:
+    put:
+      tags:
+        - Books
+      summary: Update book
+      description: Update Books
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bookId
+          in: path
+          description: bookId to update
+          required: true
+          schema:
+            type: string
+            format: hexadecimal
+      requestBody:
+        description: Update book requestBody
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                author: 
+                  type: string
+            example:
+              name: Test Book
+              author: Some Author
+              
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required
+    delete:
+      tags:
+        - Books
+      summary: Delete books
+      description: Delete book
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bookId
+          in: path
+          description: bookId to delete
+          required: true
+          schema:
+            type: string
+            format: hexadecimal
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required    
+  /book/issue/{bookId}:
+    post: 
+      tags:
+        - Books
+      summary: Issue books
+      description: Issue Books
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bookId
+          in: path
+          description: bookId to issue
+          required: true
+          schema:
+            type: string
+            format: hexadecimal
+      requestBody:
+        description: Issue book requestBody
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  format: hexadecimal
+                dueDate: 
+                  type: string
+            example:
+              userId: 658546b8cd949886b518f94f
+              dueDate: "2023-04-24T10:26:54.644Z"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required
+  /book/return/{bookId}:
+    post: 
+      tags:
+        - Books
+      summary: Return books
+      description: Return Books
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: bookId
+          in: path
+          description: bookId to issue
+          required: true
+          schema:
+            type: string
+            format: hexadecimal
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required
+
+  /transaction:
+    get:
+      tags:
+        - Transaction
+      summary: Get all transaction
+      description: Get transaction by logged in user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Validation error
+        "401":
+          description: Authentication required      
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
