@@ -118,7 +118,7 @@ exports.deleteUser = async (req, res) => {
         res,
         false,
         400,
-        "User cant be deleted! User has assigned one book."
+        "User cant be deleted! User has borrowed book."
       );
     }
     await Promise.all([
