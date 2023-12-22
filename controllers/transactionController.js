@@ -17,8 +17,8 @@ exports.getTransactions = async (req, res) => {
       },
       {
         $sort: {
-          createdAt: -1
-        }
+          createdAt: -1,
+        },
       },
       {
         $lookup: {
@@ -71,7 +71,7 @@ exports.getTransactions = async (req, res) => {
     return response(
       res,
       false,
-      201,
+      200,
       "Get transaction successfully!",
       transactions
     );

@@ -9,9 +9,9 @@ exports.createBook = async (req, res) => {
     const { name, author } = req?.body;
     const findBook = await bookModel.findOne({ name });
 
-    if (findBook) {
-      return response(res, true, 400, "Book name already exists!!");
-    }
+    // if (findBook) {
+    //   return response(res, true, 400, "Book name already exists!!");
+    // }
 
     const book = await bookModel.create({ name, author });
     return response(res, false, 201, "Book created succesfully!", book);
@@ -26,9 +26,9 @@ exports.updateBook = async (req, res) => {
     const { bookId } = req?.params;
     const findBook = await bookModel.findOne({ name });
 
-    if (findBook) {
-      return response(res, true, 400, "Book name already exists!!");
-    }
+    // if (findBook) {
+    //   return response(res, true, 400, "Book name already exists!!");
+    // }
 
     const book = await bookModel.findOneAndUpdate(
       { _id: new mongoose.Types.ObjectId(bookId) },
@@ -45,7 +45,7 @@ exports.deleteBook = async (req, res) => {
   try {
     const { bookId } = req?.params;
     if (!bookId) {
-      return response(res, true, 400, "Something went wrong!");
+      return response(res, true, 400, "Book not found!");
     }
 
     const findBook = await bookModel.findOne({
@@ -56,6 +56,10 @@ exports.deleteBook = async (req, res) => {
       return response(res, true, 400, "Please enter a valid bookId!");
     }
 
+    if (findBook.currentAvailability === false) {
+      return response(res, false, 400, "Can not delete issued book!");
+    }
+    await transactionModel.deleteMany({ bookId });
     const book = await bookModel.deleteOne({
       _id: new mongoose.Types.ObjectId(bookId),
     });
@@ -74,7 +78,7 @@ exports.getBooks = async (req, res) => {
     if (role === "USER") {
       query.currentAvailability = true;
     }
-    const books = await bookModel.find(query);
+    const books = await bookModel.find(query).sort({ createdAt: -1 }).lean();
     return response(res, false, 200, "Get books succesfully!", books);
   } catch (error) {
     return serverError(res, error);
